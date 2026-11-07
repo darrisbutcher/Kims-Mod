@@ -3,6 +3,10 @@ package com.kimbersmod.securitycams.test;
 import com.kimbersmod.securitycams.CameraBlockEntity;
 import com.kimbersmod.securitycams.LinkedCamera;
 import com.kimbersmod.securitycams.ModComponents;
+import com.kimbersmod.securitycams.ModItems;
+import com.kimbersmod.securitycams.follower.FollowerEntity;
+import com.kimbersmod.securitycams.follower.LittleVillager;
+import com.kimbersmod.securitycams.follower.VeiledChameleon;
 import java.util.List;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -10,6 +14,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.entity.EntityTypeTest;
 
 /** Walks through the whole feature in a real client: place a camera, link a tablet, watch it, sweep it, get an alert. */
 public class SecurityCamsClientTest implements FabricClientGameTest {
@@ -120,6 +125,117 @@ public class SecurityCamsClientTest implements FabricClientGameTest {
 				throw new AssertionError("The camera and HUD should return to normal after closing the tablet");
 			}
 			context.takeScreenshot("6_closed");
+
+			testFollowers(context, server);
 		}
+	}
+
+	private static List<? extends FollowerEntity> followers(TestServerContext server) {
+		return server.computeOnServer(s -> List.copyOf(s.overworld().getEntities(EntityTypeTest.forClass(FollowerEntity.class), e -> true)));
+	}
+
+	private static <T extends FollowerEntity> T first(TestServerContext server, Class<T> type) {
+		return server.computeOnServer(s -> s.overworld().getEntities(EntityTypeTest.forClass(type), e -> true).getFirst());
+	}
+
+	private static void testFollowers(ClientGameTestContext context, TestServerContext server) {
+		// Place both figurines on open ground, the way a player would.
+		server.runCommand("tp @p 0.5 -60 30.5 0 60");
+		server.runCommand("item replace entity @p weapon.mainhand with securitycams:little_villager_figurine");
+		context.waitTicks(10);
+		context.getInput().pressKey(options -> options.keyUse);
+		context.waitTicks(10);
+		server.runCommand("tp @p 0.5 -60 30.5 50 60");
+		server.runCommand("item replace entity @p weapon.mainhand with securitycams:veiled_chameleon_figurine");
+		context.waitTicks(10);
+		context.getInput().pressKey(options -> options.keyUse);
+		context.waitTicks(10);
+
+		int count = followers(server).size();
+		if (count != 2) {
+			throw new AssertionError("Expected 2 followers after placing both figurines, found " + count);
+		}
+		boolean ownedByPlayer = server.computeOnServer(s -> {
+			var player = s.getPlayerList().getPlayers().getFirst();
+			return s.overworld().getEntities(EntityTypeTest.forClass(FollowerEntity.class), e -> true).stream().allMatch(f -> f.isOwnedBy(player));
+		});
+		if (!ownedByPlayer) {
+			throw new AssertionError("Both followers should belong to the player who placed them");
+		}
+
+		// They should walk over to a player who steps away, and show up on screen.
+		server.runCommand("tp @p 0.5 -60 38.5 180 18");
+		context.waitTicks(60);
+		context.takeScreenshot("7_followers_arrive");
+
+		// Leave them far behind: they should teleport to the player.
+		server.runCommand("tp @p 0.5 -60 80.5 0 10");
+		context.waitTicks(120);
+		boolean caughtUp = server.computeOnServer(s -> {
+			var player = s.getPlayerList().getPlayers().getFirst();
+			return s.overworld().getEntities(EntityTypeTest.forClass(FollowerEntity.class), e -> true).stream().allMatch(f -> f.distanceTo(player) < 8.0F);
+		});
+		if (!caughtUp) {
+			throw new AssertionError("Followers should catch up when the player moves far away");
+		}
+
+		// Camouflage: the chameleon should take on the colour of the block it stands on.
+		server.runCommand("fill -8 -61 70 9 -61 92 minecraft:sand");
+		context.waitTicks(40);
+		int onSand = server.computeOnServer(s -> first(server, VeiledChameleon.class).getCamouflage());
+		if (onSand != 1) {
+			throw new AssertionError("Chameleon on sand should use camouflage look 1 (sand), found " + onSand);
+		}
+		server.runCommand("execute as @p anchored eyes run rotate @s facing entity @e[type=securitycams:veiled_chameleon,limit=1] eyes");
+		context.waitTicks(5);
+		context.takeScreenshot("8_chameleon_on_sand");
+		server.runCommand("fill -8 -61 70 9 -61 92 minecraft:snow_block");
+		context.waitTicks(40);
+		int onSnow = server.computeOnServer(s -> first(server, VeiledChameleon.class).getCamouflage());
+		if (onSnow != 3) {
+			throw new AssertionError("Chameleon on snow should use camouflage look 3 (snow), found " + onSnow);
+		}
+		context.takeScreenshot("9_chameleon_on_snow");
+
+		// Sit and stay: an empty-handed right-click on the villager makes it stay, and again makes it follow.
+		server.runCommand("item replace entity @p weapon.mainhand with minecraft:air");
+		server.runCommand("execute as @p anchored eyes run rotate @s facing entity @e[type=securitycams:little_villager,limit=1] eyes");
+		context.waitTicks(5);
+		context.getInput().pressKey(options -> options.keyUse);
+		context.waitTicks(20);
+		boolean staying = server.computeOnServer(s -> first(server, LittleVillager.class).isOrderedToSit());
+		if (!staying) {
+			throw new AssertionError("Right-clicking the villager should make it stay put");
+		}
+		context.takeScreenshot("10_villager_staying");
+		context.getInput().pressKey(options -> options.keyUse);
+		context.waitTicks(10);
+		boolean following = server.computeOnServer(s -> !first(server, LittleVillager.class).isOrderedToSit());
+		if (!following) {
+			throw new AssertionError("Right-clicking again should make the villager follow again");
+		}
+
+		// Pack away: sneak and right-click turns the villager back into its figurine.
+		server.runCommand("execute as @p anchored eyes run rotate @s facing entity @e[type=securitycams:little_villager,limit=1] eyes");
+		context.waitTicks(5);
+		context.getInput().holdKey(options -> options.keyShift);
+		context.waitTicks(3);
+		context.getInput().pressKey(options -> options.keyUse);
+		context.waitTicks(10);
+		context.getInput().releaseKey(options -> options.keyShift);
+		int remaining = followers(server).size();
+		boolean hasFigurine = server.computeOnServer(s -> {
+			var inventory = s.getPlayerList().getPlayers().getFirst().getInventory();
+			for (int i = 0; i < inventory.getContainerSize(); i++) {
+				if (inventory.getItem(i).is(ModItems.LITTLE_VILLAGER_FIGURINE)) {
+					return true;
+				}
+			}
+			return false;
+		});
+		if (remaining != 1 || !hasFigurine) {
+			throw new AssertionError("Sneak-right-click should pack the villager away (followers left: " + remaining + ", has figurine: " + hasFigurine + ")");
+		}
+		context.takeScreenshot("11_villager_packed_away");
 	}
 }

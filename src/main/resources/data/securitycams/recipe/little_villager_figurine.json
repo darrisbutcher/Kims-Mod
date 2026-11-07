@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"key": {
+		"E": "minecraft:emerald",
+		"W": "minecraft:wheat",
+		"B": "minecraft:bread",
+		"L": "minecraft:leather"
+	},
+	"pattern": [
+		" E ",
+		"WBW",
+		" L "
+	],
+	"result": {
+		"id": "securitycams:little_villager_figurine",
+		"count": 1
+	}
+}

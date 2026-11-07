@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"key": {
+		"L": "minecraft:lime_dye",
+		"S": "minecraft:spider_eye",
+		"C": "minecraft:cactus",
+		"M": "minecraft:slime_ball",
+		"Y": "minecraft:yellow_dye"
+	},
+	"pattern": [
+		"LSL",
+		"CMC",
+		" Y "
+	],
+	"result": {
+		"id": "securitycams:veiled_chameleon_figurine",
+		"count": 1
+	}
+}

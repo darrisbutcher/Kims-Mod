@@ -29,11 +29,30 @@ public final class ModItems {
 			.component(ModComponents.LINKED_CAMERAS, List.of()))
 	);
 
+	public static final ResourceKey<Item> LITTLE_VILLAGER_FIGURINE_KEY = ResourceKey.create(Registries.ITEM, SecurityCams.id("little_villager_figurine"));
+	public static final ResourceKey<Item> CHAMELEON_FIGURINE_KEY = ResourceKey.create(Registries.ITEM, SecurityCams.id("veiled_chameleon_figurine"));
+
+	public static final Item LITTLE_VILLAGER_FIGURINE = Registry.register(
+		BuiltInRegistries.ITEM,
+		LITTLE_VILLAGER_FIGURINE_KEY,
+		new FigurineItem<>(new Item.Properties().setId(LITTLE_VILLAGER_FIGURINE_KEY).stacksTo(16), () -> ModEntities.LITTLE_VILLAGER)
+	);
+
+	public static final Item CHAMELEON_FIGURINE = Registry.register(
+		BuiltInRegistries.ITEM,
+		CHAMELEON_FIGURINE_KEY,
+		new FigurineItem<>(new Item.Properties().setId(CHAMELEON_FIGURINE_KEY).stacksTo(16), () -> ModEntities.VEILED_CHAMELEON)
+	);
+
 	private ModItems() {
 	}
 
 	public static void init() {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(output -> output.accept(CAMERA));
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> output.accept(TABLET));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
+			output.accept(LITTLE_VILLAGER_FIGURINE);
+			output.accept(CHAMELEON_FIGURINE);
+		});
 	}
 }

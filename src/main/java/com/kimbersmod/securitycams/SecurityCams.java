@@ -13,6 +13,7 @@ public class SecurityCams implements ModInitializer {
 	public void onInitialize() {
 		ModComponents.init();
 		ModBlocks.init();
+		ModEntities.init();
 		ModItems.init();
 		ModNetworking.init();
 		LOGGER.info("Security Cameras loaded");

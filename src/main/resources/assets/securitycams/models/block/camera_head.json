@@ -1,0 +1,32 @@
+{
+	"textures": {
+		"0": "securitycams:block/camera",
+		"particle": "securitycams:block/camera"
+	},
+	"elements": [
+		{
+			"name": "body",
+			"from": [5, 6, 3],
+			"to": [11, 11, 11],
+			"faces": {
+				"north": {"uv": [8, 0, 14, 5], "texture": "#0"},
+				"south": {"uv": [0, 0, 6, 5], "texture": "#0"},
+				"east":  {"uv": [0, 0, 8, 5], "texture": "#0"},
+				"west":  {"uv": [0, 0, 8, 5], "texture": "#0"},
+				"up":    {"uv": [0, 0, 6, 8], "texture": "#0"},
+				"down":  {"uv": [0, 0, 6, 8], "texture": "#0"}
+			}
+		},
+		{
+			"name": "led",
+			"from": [9.5, 10.2, 3.2],
+			"to": [10.5, 11.2, 4.2],
+			"faces": {
+				"north": {"uv": [8, 8, 10, 10], "texture": "#0"},
+				"up":    {"uv": [8, 8, 10, 10], "texture": "#0"},
+				"east":  {"uv": [8, 8, 10, 10], "texture": "#0"},
+				"west":  {"uv": [8, 8, 10, 10], "texture": "#0"}
+			}
+		}
+	]
+}

@@ -1,0 +1,5 @@
+{
+	"variants": {
+		"": {"model": "securitycams:block/camera_head"}
+	}
+}

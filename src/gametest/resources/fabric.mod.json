@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "securitycams-test",
+	"version": "1.0.0",
+	"name": "Security Cameras test",
+	"environment": "client",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"com.kimbersmod.securitycams.test.SecurityCamsClientTest"
+		]
+	},
+	"depends": {
+		"securitycams": "*"
+	}
+}

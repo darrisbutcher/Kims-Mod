@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"key": {
+		"I": "minecraft:iron_ingot",
+		"G": "minecraft:glass_pane",
+		"R": "minecraft:redstone",
+		"L": "minecraft:lapis_lazuli"
+	},
+	"pattern": [
+		"IGI",
+		"IRI",
+		"ILI"
+	],
+	"result": {
+		"id": "securitycams:tablet",
+		"count": 1
+	}
+}

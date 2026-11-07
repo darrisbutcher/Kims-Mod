@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.kimbersmod.securitycams.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"CameraAccessor"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

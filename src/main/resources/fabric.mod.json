@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "securitycams",
+	"version": "${version}",
+	"name": "Security Cameras",
+	"description": "Place security cameras and watch them live on a tablet.",
+	"authors": [
+		"Darris"
+	],
+	"license": "All-Rights-Reserved",
+	"icon": "assets/securitycams/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.kimbersmod.securitycams.SecurityCams"
+		],
+		"client": [
+			"com.kimbersmod.securitycams.client.SecurityCamsClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "securitycams.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

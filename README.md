@@ -54,7 +54,7 @@ Notes:
 ## Building
 
 ```
-gradlew build
+.\gradlew.bat build
 ```
 
 Needs JDK 25. The jar is written to `build/libs/`.

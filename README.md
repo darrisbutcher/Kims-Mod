@@ -59,6 +59,21 @@ Notes:
 
 Needs JDK 25. The jar is written to `build/libs/`.
 
+## Releasing
+
+Releases are built and published automatically by GitHub Actions (`.github/workflows/release.yml`).
+To publish one, push a tag that starts with `v`:
+
+```
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+GitHub builds the mod with that version number, creates a release named after the tag with generated
+release notes, and attaches `securitycams-0.2.0.jar`. A tag with a dash in it (such as `v0.2.0-beta`)
+is marked as a pre-release. You can also run the workflow by hand from the repository's Actions tab to
+check that the build works; that keeps the jar as a download on the run but does not create a release.
+
 ## Testing
 
 ```
